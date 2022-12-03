@@ -1,4 +1,5 @@
 ﻿using SortAlgorithms.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,8 +10,9 @@ namespace SortAlgorithms.Implementations
         public IEnumerable<int> Sort(IEnumerable<int> source)
         {
             var array = source.ToArray();
+            var intervals = GetTokudaIntervals(array.Length / 2).Reverse().ToArray();
 
-            for (int interval = array.Length / 2; interval > 0; interval /= 2)
+            foreach (var interval in intervals)
             {
                 for (int i = interval; i < array.Length; i++)
                 {
@@ -26,6 +28,26 @@ namespace SortAlgorithms.Implementations
             }
 
             return array;
+        }
+
+        private IEnumerable<int> GetTokudaIntervals(int size)
+        {
+            var i = 0;
+            double intervalSize;
+            while (true)
+            {
+                intervalSize = Math.Ceiling((9 * Math.Pow(9.0 / 4.0, i) - 4) / 5);
+                i++;
+                if (intervalSize < size)
+                {
+                    yield return (int)intervalSize;
+                }
+                else
+                {
+                    break;
+                }
+
+            }
         }
     }
 }

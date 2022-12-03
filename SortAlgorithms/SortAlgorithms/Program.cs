@@ -49,16 +49,23 @@ namespace SortAlgorithms
                 .Select(x => random.Next(0, int.MaxValue));
         }
 
-        private static void MeasureSortEfficiency(ISort sort, IEnumerable<int> data)
+        private static void MeasureSortEfficiency(ISort sort, IEnumerable<int> data, bool printArray = false)
         {
             var sw = new Stopwatch();
 
             sw.Start();
-            sort.Sort(data);
+            var sortedArray = sort.Sort(data);
             sw.Stop();
 
             Console.WriteLine($"{sort.GetType().Name}:");
             Console.WriteLine($"Array length = {data.Count()} -> {sw.ElapsedTicks} ticks / {sw.ElapsedMilliseconds} ms\n");
+
+            if (printArray)
+            {
+                Console.WriteLine(string.Join(", ", sortedArray));
+            }
+
+
         }
     }
 }
