@@ -39,13 +39,9 @@ namespace SortAlgorithms.Implementations
                 intervalSize = Math.Ceiling((9 * Math.Pow(9.0 / 4.0, i) - 4) / 5);
                 i++;
                 if (intervalSize < size)
-                {
                     yield return (int)intervalSize;
-                }
                 else
-                {
                     break;
-                }
 
             }
         }

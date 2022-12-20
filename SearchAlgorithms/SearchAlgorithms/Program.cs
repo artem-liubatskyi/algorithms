@@ -35,7 +35,7 @@ namespace SearchAlgorithms
             foreach (var size in new int[] { 100, 1000, 10000, 100000 })
             {
                 var array = BuildRandomArray(size).ToArray();
-                Console.WriteLine(string.Join(",", array));
+
                 var sw = new Stopwatch();
 
                 foreach (var search in searches)
@@ -45,7 +45,10 @@ namespace SearchAlgorithms
                     long elapsedTicksSum = 0;
                     long millisecondsSum = 0;
 
-                    foreach (var element in array)
+                    var arrayCopy = new int[array.Length];
+                    array.CopyTo(arrayCopy, 0);
+
+                    foreach (var element in arrayCopy.Reverse())
                     {
 
                         sw.Start();
@@ -63,9 +66,9 @@ namespace SearchAlgorithms
 
                     Console.WriteLine($"{search.GetType().Name}:");
                     Console.WriteLine($"Array length: {array.Length}");
-                    Console.WriteLine($"Average iteration count: {iterationCountSum / array.Length}");
-                    Console.WriteLine($"Average comparison count: {comparisonCountSum / array.Length}");
-                    Console.WriteLine($"Average time: {elapsedTicksSum / array.Length} ticks / {millisecondsSum / array.Length} ms");
+                    Console.WriteLine($"Average iteration count: {(double)iterationCountSum / array.Length}");
+                    Console.WriteLine($"Average comparison count: {(double)comparisonCountSum / array.Length}");
+                    Console.WriteLine($"Average time: {(double)elapsedTicksSum / array.Length} ticks / {(double)millisecondsSum / array.Length} ms");
 
                     sw.Start();
                     var individualResult = search.Search(array, 190);
@@ -82,7 +85,4 @@ namespace SearchAlgorithms
             }
         }
     }
-
-
-
 }

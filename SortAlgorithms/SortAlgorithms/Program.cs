@@ -64,8 +64,6 @@ namespace SortAlgorithms
             {
                 Console.WriteLine(string.Join(", ", sortedArray));
             }
-
-
         }
     }
 }

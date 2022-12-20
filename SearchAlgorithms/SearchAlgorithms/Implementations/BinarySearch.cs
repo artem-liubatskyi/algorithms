@@ -15,8 +15,8 @@ namespace SearchAlgorithms.Implementations
             while (left <= right && source[left] <= key && key <= source[right])
             {
                 iterationCount++;
-                comparisonCount++;
 
+                comparisonCount++;
                 if (left == right || source[left] == source[right])
                 {
                     return new SearchResult { Index = left, IterationCount = iterationCount, ComparisonCount = comparisonCount };
@@ -41,8 +41,6 @@ namespace SearchAlgorithms.Implementations
                 }
             }
             return new SearchResult { Index = left, IterationCount = iterationCount, ComparisonCount = comparisonCount };
-
-
         }
     }
 }
