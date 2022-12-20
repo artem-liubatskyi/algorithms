@@ -13,7 +13,7 @@ namespace Hashing
 
             var hashTable = new HashTable<string>(29);
 
-            foreach (var student in testData)
+            foreach (var student in TestData)
             {
                 hashTable.Add(student, student);
             }
@@ -22,9 +22,9 @@ namespace Hashing
             Console.WriteLine(hashTable.ToString());
             Console.Write($"======== Key: Search result ======== \n");
 
-            testData.AddRange(new string[] { "АБВГДЖ", "АААЯЯЯ" });
+            TestData.AddRange(new string[] { "Missing", "Test" });
 
-            foreach (var key in testData)
+            foreach (var key in TestData)
             {
                 var (value, collisions) = hashTable.Get(key);
 
@@ -33,6 +33,6 @@ namespace Hashing
             Console.ReadKey();
         }
 
-        private static List<string> testData = new List<string>(){};
+        private static readonly List<string> TestData = new List<string>() { };
     }
 }
