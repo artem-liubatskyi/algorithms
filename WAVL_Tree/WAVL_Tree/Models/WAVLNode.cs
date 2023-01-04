@@ -1,23 +1,25 @@
-﻿namespace WAVL_Tree.Models
+﻿using WAVL_Tree.Interfaces;
+
+namespace WAVL_Tree.Models
 {
-    public class WAVLNode
+    public class WAVLNode<ValueType> : Node<ValueType>
     {
         public int Key { get; set; }
-        public string Value { get; set; }
-        public WAVLNode Left { get; set; }
-        public WAVLNode Right { get; set; }
-        public WAVLNode Parent { get; set; }
+        public ValueType Value { get; set; }
+        public Node<ValueType> Left { get; set; }
+        public Node<ValueType> Right { get; set; }
+        public Node<ValueType> Parent { get; set; }
         public int SubtreeSize { get; set; }
         public int Rank { get; set; }
 
-        public WAVLNode(int key, string value)
+        public WAVLNode(int key, ValueType value)
         {
             Key = key;
             Value = value;
             SubtreeSize = 1;
         }
 
-        public WAVLNode(int key, string value, WAVLNode parent)
+        public WAVLNode(int key, ValueType value, Node<ValueType> parent)
         {
             Rank = 0;
             Key = key;
@@ -37,7 +39,7 @@
             return (Left == null && Right == null);
         }
 
-        public void SetRightChild(WAVLNode node)
+        public void SetRightChild(Node<ValueType> node)
         {
             Right = node;
             if (node != null)
@@ -48,7 +50,7 @@
             UpdateSubtreeSize();
         }
 
-        public void SetLeftChild(WAVLNode node)
+        public void SetLeftChild(Node<ValueType> node)
         {
 
             Left = node;
@@ -73,13 +75,11 @@
             }
         }
 
-        public void ReplaceWith(WAVLNode replacer, ref WAVLNode root)
+        public void ReplaceWith(Node<ValueType> replacer, ref Node<ValueType> root)
         {
+            Node<ValueType> parent = Parent;
+            Node<ValueType> repParent = replacer.Parent;
 
-            WAVLNode parent = Parent;
-            WAVLNode repParent = replacer.Parent;
-
-            /* Step 1: Remove replacer as child of its parent */
             if (repParent != null)
             {
                 if (replacer.Key > repParent.Key)
@@ -90,7 +90,6 @@
                 repParent.UpdateSubtreeSize();
             }
 
-            /* Step 2: Set replacer as child of the replaced node, doubly linked */
             if (parent != null)
             {
                 if (Key < parent.Key)
