@@ -475,16 +475,16 @@ namespace WAVL_Tree.Implementations
 
         public List<Node<ValueType>> InorderWalk()
         {
-            var sortedKeys = new List<Node<ValueType>>();
+            var nodes = new List<Node<ValueType>>();
 
             Node<ValueType> iterate = null;
             for (int i = 0; i < Root?.SubtreeSize; i++)
             {
                 iterate = Next(iterate);
-                sortedKeys.Add(iterate);
+                nodes.Add(iterate);
             }
 
-            return sortedKeys;
+            return nodes;
         }
 
         public Node<ValueType> Next(Node<ValueType> curr)
@@ -514,12 +514,29 @@ namespace WAVL_Tree.Implementations
 
         public Node<ValueType> Successor(Node<ValueType> root)
         {
-            throw new System.NotImplementedException();
+            Node<ValueType> previous = null;
+            Node<ValueType> current = root.Right;
+            while (current != null)
+            {
+                previous = current;
+                current = current.Left;
+            }
+
+            return previous;
         }
 
         public Node<ValueType> Predecessor(Node<ValueType> root)
         {
-            throw new System.NotImplementedException();
+            Node<ValueType> previous = null;
+            Node<ValueType> current = root.Left;
+            while (current != null)
+            {
+                NodeCounter?.Invoke();
+                previous = current;
+                current = current.Right;
+            }
+
+            return previous;
         }
     }
 }

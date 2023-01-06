@@ -1,101 +1,176 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using WAVL_Tree.Implementations;
+using WAVL_Tree.Interfaces;
 using WAVL_Tree.Models;
 
 namespace WAVL_Tree
 {
-    class Program
+    public class Program
     {
-        public static void Main(string[] args)
+        public static void Main()
         {
-            testWAVL();
+            IBinaryTree<string> avlTree;
+            IBinaryTree<string> bstTree;
+
+            double avlAverageSearchNodeCount = 0;
+            double avlAverageInsertNodeCount = 0;
+            double avlAverageDeleteNodeCount = 0;
+            double avlAverageInsertRotationCount = 0;
+            double avlAverageDeleteRotationCount = 0;
+
+            double simpleAverageSearchNodeCount = 0;
+            double simpleAverageInsertNodeCount = 0;
+            double simpleAverageDeleteNodeCount = 0;
+            double simpleAverageInsertRotationCount = 0;
+            double simpleAverageDeleteRotationCount = 0;
+
+            for (int i = 0; i < 10; i++)
+            {
+                avlTree = new WAVLTree<string>();
+                bstTree = new BSTree<string>();
+
+                Console.WriteLine($"-- WAVL Tree - {i + 1} --");
+                var avlTreeResult = GetResult(avlTree, false);
+
+                avlAverageSearchNodeCount += avlTreeResult.Item1;
+                avlAverageInsertNodeCount += avlTreeResult.Item2;
+                avlAverageDeleteNodeCount += avlTreeResult.Item3;
+                avlAverageInsertRotationCount += avlTreeResult.Item4;
+                avlAverageDeleteRotationCount += avlTreeResult.Item5;
+
+                Console.WriteLine($"-- BS Tree - {i + 1} --");
+                var simpleTreeResult = GetResult(bstTree, false);
+
+                simpleAverageSearchNodeCount += simpleTreeResult.Item1;
+                simpleAverageInsertNodeCount += simpleTreeResult.Item2;
+                simpleAverageDeleteNodeCount += simpleTreeResult.Item3;
+                simpleAverageInsertRotationCount += simpleTreeResult.Item4;
+                simpleAverageDeleteRotationCount += simpleTreeResult.Item5;
+            }
+
+            Console.WriteLine($"-- WAVL Tree --");
+            Console.WriteLine($"Average search node count: {avlAverageSearchNodeCount / 10}");
+            Console.WriteLine($"Average insert node count: {avlAverageInsertNodeCount / 10}");
+            Console.WriteLine($"Average delete node count: {avlAverageDeleteNodeCount / 10}");
+            Console.WriteLine($"Average insert rotation count: {avlAverageInsertRotationCount / 10}");
+            Console.WriteLine($"Average delete rotation count: {avlAverageDeleteRotationCount / 10}");
+
+            Console.WriteLine($"-- BS Tree --");
+            Console.WriteLine($"Average search node count: {simpleAverageSearchNodeCount / 10}");
+            Console.WriteLine($"Average insert node count: {simpleAverageInsertNodeCount / 10}");
+            Console.WriteLine($"Average delete node count: {simpleAverageDeleteNodeCount / 10}");
+            Console.WriteLine($"Average insert rotation count: {simpleAverageInsertRotationCount / 10}");
+            Console.WriteLine($"Average delete rotation count: {simpleAverageDeleteRotationCount / 10}");
+
         }
 
-        public static void testWAVL()
+        public static (double, double, double, double, double) GetResult(IBinaryTree<string> tree, bool canOutput)
         {
-            WAVLTree t = new WAVLTree();
-            t.Insert(1, "test1");
-            t.Insert(1, "test1");
-            t.Insert(-1, "test-1");
-            t.Insert(7, "test7");
-            if ("test7" != t.Max())
+            int rndKey = 0;
+
+            var rand = new Random();
+            var memory = new List<int>();
+            for (int i = 0; i < 1000000; i++)
             {
-                return;
-            }
-            if (t.Min() != "test-1")
-            {
-                return;
-            }
-            if (t.Max() != "test7")
-            {
-                return;
-            }
-            t.Delete(1);
-            t.Delete(-1);
-            t.Delete(7);
-            t.Delete(7);
-            if (t.Min() != null)
-            {
-                return;
-            }
-            if (t.Max() != null)
-            {
-                return;
-            }
-            if (t.InfoToArray().Count != 0)
-            {
-                return;
+                rndKey = rand.Next();
+                memory.Add(rndKey);
+                tree.Insert(rndKey, "");
             }
 
+            int searchNodeCount = 0;
+            int insertNodeCount = 0;
+            int deleteNodeCount = 0;
+            int insertRotationCount = 0;
+            int deleteRotationCount = 0;
 
-            fuzz(10000, true);
-        }
+            int insertCount = 0;
+            int deleteCount = 0;
+            int searchCount = 0;
 
-        private static void fuzz(int count, bool validateStructure)
-        {
-            WAVLTree t = new WAVLTree();
-            Random r = new Random();
+            int rndOperation = -1;
 
-            int maxOpsForInsert = 0;
-            int totalOpsForInsert = 0;
-            for (int i = 0; i < count; i++)
+            tree.NodeCounter += () =>
             {
-                int randomKey = r.Next();
-                int curr = t.Insert(randomKey, randomKey.ToString());
-
-                if (curr > maxOpsForInsert)
-                    maxOpsForInsert = curr;
-                totalOpsForInsert += curr;
-
-                if (validateStructure && !ValidateBinaryStructure(t.Root))
+                switch (rndOperation)
                 {
-                    Console.WriteLine("Tree failed validation during insert");
-                    return;
+                    case 1:
+                        insertNodeCount++;
+                        break;
+                    case 2:
+                        deleteNodeCount++;
+                        break;
+                    case 3:
+                        searchNodeCount++;
+                        break;
+                    default:
+                        break;
+                }
+            };
+
+            tree.RotationCounter += (count) =>
+            {
+                switch (rndOperation)
+                {
+                    case 1:
+                        insertRotationCount += count;
+                        break;
+                    case 2:
+                        deleteRotationCount += count;
+                        break;
+                    default:
+                        break;
+                }
+            };
+
+            for (int i = 0; i < 200000; i++)
+            {
+                rndOperation = rand.Next(1, 4);
+                switch (rndOperation)
+                {
+                    case 1:
+                        rndKey = rand.Next();
+                        tree.Insert(rndKey, "");
+                        insertCount++;
+                        break;
+                    case 2:
+                        var rndIndex = rand.Next(0, memory.Count);
+                        tree.Delete(memory[rndIndex]);
+                        memory.RemoveAt(rndIndex);
+                        deleteCount++;
+                        break;
+                    case 3:
+                        rndKey = rand.Next();
+                        tree.Search(rndKey);
+                        searchCount++;
+                        break;
                 }
             }
 
-            var keys = t.KeysToArray();
-            int maxOpsForDelete = 0;
-            int totalOpsForDelete = 0;
-
-            foreach (int k in keys)
+            if (canOutput)
             {
-                int curr = t.Delete(k);
-                if (curr > maxOpsForDelete)
-                    maxOpsForDelete = curr;
-                totalOpsForDelete += curr;
+                Console.WriteLine($"Search node count: {searchNodeCount} searches count: {searchCount}");
+                Console.WriteLine($"Insert node count: {insertNodeCount} inserts count: {insertCount}");
+                Console.WriteLine($"Delete node count: {deleteNodeCount} deletes count: {deleteCount}");
+                Console.WriteLine($"Insert rotation count: {insertRotationCount} inserts count: {insertCount}");
+                Console.WriteLine($"Delete rotation count: {deleteRotationCount} deletes count: {deleteCount}");
+
+                Console.WriteLine($"Average search node count: {(double)searchNodeCount / searchCount}");
+                Console.WriteLine($"Average insert node count: {(double)insertNodeCount / insertCount}");
+                Console.WriteLine($"Average delete node Count: {(double)deleteNodeCount / deleteCount}");
+                Console.WriteLine($"Average insert rotation count: {(double)insertRotationCount / insertCount}");
+                Console.WriteLine($"Average delete rotation count: {(double)deleteRotationCount / deleteCount}");
             }
 
-            float averageInsert = totalOpsForInsert / count;
-            float averageDelete = totalOpsForDelete / count;
-
-            Console.WriteLine("" + count + ", " + maxOpsForInsert + ", " + averageInsert
-                                + ", " + maxOpsForDelete + ", " + averageDelete);
-
+            return ((double)searchNodeCount / searchCount,
+                (double)insertNodeCount / insertCount,
+                (double)deleteNodeCount / deleteCount,
+                (double)insertRotationCount / insertCount,
+                (double)deleteRotationCount / deleteCount);
         }
 
-        static bool ValidateBinaryStructure(WAVLNode n)
+        static bool ValidateBinaryStructure(Node<string> n)
         {
             if (n == null)
             {
@@ -103,7 +178,7 @@ namespace WAVL_Tree
             }
             if (n.Right != null)
             {
-                foreach (WAVLNode d in GetDecendents(n.Right))
+                foreach (WAVLNode<string> d in GetDecendents(n.Right))
                 {
                     if (d.Key <= n.Key)
                     {
@@ -114,7 +189,7 @@ namespace WAVL_Tree
             }
             if (n.Left != null)
             {
-                foreach (WAVLNode d in GetDecendents(n.Left))
+                foreach (WAVLNode<string> d in GetDecendents(n.Left))
                 {
                     if (d.Key >= n.Key)
                     {
@@ -128,9 +203,9 @@ namespace WAVL_Tree
                 ValidateBinaryStructure(n.Right));
         }
 
-        static List<WAVLNode> GetDecendents(WAVLNode n)
+        static List<Node<string>> GetDecendents(Node<string> n)
         {
-            List<WAVLNode> nodes = new List<WAVLNode>();
+            List<Node<string>> nodes = new List<Node<string>>();
             if (n.Left != null)
             {
                 nodes.Add(n.Left);
